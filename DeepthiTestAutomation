@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+
+namespace SampleAutomation
+{
+    [TestClass]
+    public class UnitTest1
+    {
+        [TestMethod]
+        public void VerifyMenuItems()
+        {
+
+            /* Assumption: Task is to verify the menu items which does not include sub menu items.
+             * Approach: I have used List to store all expected menu items names. Then used a for loop to loop through actual element menu names and verify that.
+             * I have used IWebElements to read all li items which are under ul.*/
+             
+            // Try catch block to catch unexpected error during script execution
+            try
+            {
+
+                // Creating Instance of Chrome Driver
+                IWebDriver driver = new ChromeDriver();
+
+                // To open Teachaway website
+                driver.Navigate().GoToUrl("https://www.teachaway.com/");
+                driver.Manage().Window.Maximize();
+
+                // To validate home screen
+                IWebElement logo = driver.FindElement(By.XPath("//a[@class='navbar-brand d-none d-lg-block']//img[@src='/themes/contrib/tams/logo.svg']"));
+                Assert.IsTrue(logo.Displayed);
+
+
+                // To verify menu items
+                // List to store menu text
+                List<string> expectedList = new List<string>();
+                expectedList.Add("Jobs");
+                expectedList.Add("Tefl");
+                expectedList.Add("Teacher Certification");
+                expectedList.Add("Courses");
+
+                // Reading all lists and running through a loop to verify the menu items
+                IList<IWebElement> menuList = driver.FindElements(By.XPath("//ul[@class='tb-megamenu-nav nav level-0 items-5']/li"));
+                for (int i = 1; i < menuList.Count-1; i++)
+                {
+                string a = menuList[i].GetAttribute("data-label").ToUpper();
+                Assert.AreEqual(expectedList[i].ToUpper(), menuList[i].GetAttribute("data-label").ToUpper(), "Expected and Actual menu list items are not same hence failed");
+                }
+
+
+                // To close browser
+                driver.Quit();
+            }
+            catch(Exception e)
+            {
+                Assert.Fail("The occurred exception is" + e);
+            }
+
+        }
+    }
+}
